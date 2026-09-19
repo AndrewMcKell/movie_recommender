@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 from dotenv import load_dotenv
 
@@ -15,7 +16,10 @@ def main():
         "query": movie_title
     }
     response = requests.get(url, headers=headers, params=params)
-    print(response.text)
+    response_data = response.json()
+    top_result_data = response_data["results"][0]
+    with open("result.json", "w") as file:
+        json.dump(top_result_data, file, indent=4)
     
 
 if __name__ == "__main__":
