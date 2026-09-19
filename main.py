@@ -1,7 +1,9 @@
 import os
 import requests
+from dotenv import load_dotenv
 
 def main():
+    load_dotenv()
     url = "https://api.themoviedb.org/3/search/movie"
     token = os.getenv("TMDB_TOKEN")
     headers = {
