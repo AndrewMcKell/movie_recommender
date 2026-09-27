@@ -89,7 +89,7 @@ def get_movie_data(movie_id: int):
         release_year = release_year,
         overview = details["overview"],
         genres = details["genres"],
-        keywords = keywords,
+        keywords = keywords["keywords"],
         director = get_director(credits),
         cast = get_main_cast(credits)
     )
