@@ -2,6 +2,8 @@ import os
 import requests
 from dotenv import load_dotenv
 
+from movie import Movie
+
 def search_movie_by_title(title: str):
     load_dotenv()
     url = "https://api.themoviedb.org/3/search/movie"
@@ -59,3 +61,30 @@ def get_director(credits: dict):
         if person["job"] == "Director":
             director_details = person
     return director_details
+
+def get_main_cast(credits: dict, n: int=10):
+    main_cast = []
+    for actor in credits["cast"][:n]:
+        actor_details = {
+            "id": actor["id"],
+            "name": actor["name"],
+            "character": actor["character"]
+        }
+        main_cast.append(actor_details)
+    return main_cast
+
+def get_movie_data(movie_id: int):
+    details = get_movie_details(movie_id)
+    keywords = get_movie_keywords(movie_id)
+    credits = get_movie_credits(movie_id)
+    release_year = details["release_date"][:4]
+    return Movie(
+        movie_id = details["id"],
+        title = details["title"],
+        release_year = release_year,
+        overview = details["overview"],
+        genres = details["genres"],
+        keywords = keywords,
+        director = get_director(credits),
+        cast = get_main_cast(credits)
+    )

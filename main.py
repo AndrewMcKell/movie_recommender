@@ -8,7 +8,8 @@ from search_movies import (
     get_movie_details,
     get_movie_keywords,
     get_movie_credits,
-    get_director
+    get_director,
+    get_main_cast
 )
 
 
@@ -21,7 +22,7 @@ def main():
     result = {}
     result["details"] = movie_data
     result["keywords"] = keyword_data
-    result["cast"] = credit_data["cast"][:10]
+    result["cast"] = get_main_cast(credit_data)
     director_data = get_director(credit_data)
     result["director"] = director_data
     with open("result.json", "w") as input_movie:
