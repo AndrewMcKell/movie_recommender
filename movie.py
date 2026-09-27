@@ -7,7 +7,7 @@ class Movie:
         overview: str,
         genres: list[dict],
         keywords: list[dict],
-        director: dict,
+        director: list[dict],
         cast: list[dict],
     ):
         self.movie_id = movie_id
@@ -36,3 +36,9 @@ class Movie:
         for actor in self.cast:
             cast_ids.append(actor["id"])
         return cast_ids
+
+    def get_director_ids(self):
+        director_ids = []
+        for director in self.director:
+            director_ids.append(director["id"])
+        return director_ids

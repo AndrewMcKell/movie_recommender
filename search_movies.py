@@ -57,10 +57,15 @@ def get_movie_credits(id: int):
     return credit_data
 
 def get_director(credits: dict):
+    directors = []
     for person in credits["crew"]:
         if person["job"] == "Director":
-            director_details = person
-    return director_details
+            director_details = {
+                "id": person["id"],
+                "name": person["name"]
+            }
+            directors.append(director_details)
+    return directors
 
 def get_main_cast(credits: dict, n: int=10):
     main_cast = []
