@@ -10,9 +10,10 @@ from search_movies import (
     get_movie_credits,
     get_director,
     get_main_cast,
-    get_movie_data
+    get_movie_data,
+    find_candidate_movies
 )
-from recommender import movie_similarity
+from recommender import movie_similarity, get_candidate_movie_ids
 
 def main():
     movie_search = search_movie_by_title("City of God")
@@ -48,6 +49,24 @@ def main():
     print(similarity_1_3)
     print(similarity_2_3)
     print(same)
+
+    movie_to_search = "Casino Royale"
+    movie_input_search = search_movie_by_title(movie_to_search)
+    movie_input_id = movie_input_search["id"]
+    movie_input = get_movie_data(movie_input_id)
+    candidate_ids = get_candidate_movie_ids(movie_input)
+    movie_list = []
+    for movie_id in candidate_ids:
+        candidate_movie = get_movie_data(movie_id)
+        movie_list.append(candidate_movie)
+    top_candidates = []
+    for candidate in movie_list:
+        similarity_score = movie_similarity(movie_input, candidate)
+        top_candidates.append((similarity_score, candidate))
+    top_candidates.sort(key=lambda item: item[0], reverse=True)
+    for (score, recommendation) in top_candidates[:10]:
+        print(f"title: {recommendation.title}, score: {score}")
+
 
 if __name__ == "__main__":
     main()

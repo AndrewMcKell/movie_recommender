@@ -1,4 +1,5 @@
 from movie import Movie
+from search_movies import find_candidate_movies
 
 def set_similarity(ids1: list[int], ids2: list[int]):
     set_a = set(ids1)
@@ -30,3 +31,21 @@ def movie_similarity(movie1: Movie, movie2: Movie):
         + 0.25 * director_score
     )
     return overall_score
+
+def get_candidate_movie_ids(movie: Movie):
+    candidate_ids = set()
+    for page in range(1, 6):
+        genre_results = find_candidate_movies(genres=movie.get_genre_ids(), page=page)
+        keyword_results = find_candidate_movies(keywords=movie.get_keyword_ids(), page=page)
+        cast_results = find_candidate_movies(cast=movie.get_cast_ids(), page = page)
+        director_results = find_candidate_movies(director=movie.get_director_ids(), page=page)
+        for genre_result in genre_results["results"]:
+            candidate_ids.add(genre_result["id"])
+        for keyword_result in keyword_results["results"]:
+            candidate_ids.add(keyword_result["id"])
+        for cast_result in cast_results["results"]:
+            candidate_ids.add(cast_result["id"])
+        for director_result in director_results["results"]:
+            candidate_ids.add(director_result["id"])
+    candidate_ids.discard(movie.movie_id)
+    return list(candidate_ids)

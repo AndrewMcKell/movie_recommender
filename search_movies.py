@@ -4,14 +4,18 @@ from dotenv import load_dotenv
 
 from movie import Movie
 
-def search_movie_by_title(title: str):
+def prepare_search():
     load_dotenv()
-    url = "https://api.themoviedb.org/3/search/movie"
     token = os.getenv("TMDB_TOKEN")
     headers = {
         "accept": "application/json",
         "Authorization": f"Bearer {token}"
-        }
+    }
+    return headers
+
+def search_movie_by_title(title: str):
+    url = "https://api.themoviedb.org/3/search/movie"
+    headers = prepare_search()
     params = {
         "query": title
     }
@@ -21,37 +25,22 @@ def search_movie_by_title(title: str):
     return top_result_data
 
 def get_movie_details(id: int):
-    load_dotenv()
     url = f"https://api.themoviedb.org/3/movie/{id}"
-    token = os.getenv("TMDB_TOKEN")
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {token}"
-        }
+    headers = prepare_search()
     response = requests.get(url, headers=headers)
     result_data = response.json()
     return result_data
 
 def get_movie_keywords(id: int):
-    load_dotenv()
     url = f"https://api.themoviedb.org/3/movie/{id}/keywords"
-    token = os.getenv("TMDB_TOKEN")
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {token}"
-        }
+    headers = prepare_search()
     response = requests.get(url, headers=headers)
     keyword_data = response.json()
     return keyword_data
 
 def get_movie_credits(id: int):
-    load_dotenv()
     url = f"https://api.themoviedb.org/3/movie/{id}/credits"
-    token = os.getenv("TMDB_TOKEN")
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {token}"
-        }
+    headers = prepare_search()
     response = requests.get(url, headers=headers)
     credit_data = response.json()
     return credit_data
@@ -93,3 +82,40 @@ def get_movie_data(movie_id: int):
         director = get_director(credits),
         cast = get_main_cast(credits)
     )
+
+def find_candidate_movies(
+        *,
+        genres: list[int] | None = None,
+        keywords: list[int] | None = None,
+        cast: list[int] | None = None,
+        director: list[int] | None = None,
+        page: int = 1,
+    ) -> list[dict]:
+    url = "https://api.themoviedb.org/3/discover/movie"
+    headers = prepare_search()
+    params = {
+        "page": page,
+        "sort_by": "popularity.desc"
+    }
+    if genres:
+        genre_list = []
+        for genre_id in genres:
+            genre_list.append(str(genre_id))
+        params["with_genres"] = "|".join(genre_list)
+    if keywords:
+        keyword_list = []
+        for keyword_id in keywords:
+            keyword_list.append(str(keyword_id))
+        params["with_keywords"] = "|".join(keyword_list)
+    if cast:
+        cast_list = []
+        for actor_id in cast:
+            cast_list.append(str(actor_id))
+        params["with_cast"] = "|".join(cast_list)
+    if director:
+        director_list = []
+        for director_id in director:
+            director_list.append(str(director_id))
+        params["with_crew"] = "|".join(director_list)
+    response = requests.get(url, headers=headers, params=params)
+    return response.json()
