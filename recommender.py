@@ -1,5 +1,5 @@
 from movie import Movie
-from search_movies import find_candidate_movies
+from search_movies import find_candidate_movies, get_movie_data
 
 def set_similarity(ids1: list[int], ids2: list[int]):
     set_a = set(ids1)
@@ -51,3 +51,13 @@ def get_candidate_movie_ids(movie: Movie):
             candidate_ids.add(director_result["id"])
     candidate_ids.discard(movie.movie_id)
     return list(candidate_ids)
+
+def recommend_movies(movie: Movie, n: int=10):
+    candidate_ids = get_candidate_movie_ids(movie)
+    scored_candidates = []
+    for movie_id in candidate_ids:
+        candidate = get_movie_data(movie_id)
+        score = movie_similarity(movie, candidate)
+        scored_candidates.append((score, candidate))
+    scored_candidates.sort(key=lambda item: item[0], reverse=True)
+    return scored_candidates[:n]
