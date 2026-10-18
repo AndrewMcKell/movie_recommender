@@ -24,27 +24,6 @@ def search_movies_by_title(title: str):
     top_results_data = response_data["results"]
     return top_results_data
 
-def get_movie_details(id: int):
-    url = f"https://api.themoviedb.org/3/movie/{id}"
-    headers = prepare_search()
-    response = requests.get(url, headers=headers)
-    result_data = response.json()
-    return result_data
-
-def get_movie_keywords(id: int):
-    url = f"https://api.themoviedb.org/3/movie/{id}/keywords"
-    headers = prepare_search()
-    response = requests.get(url, headers=headers)
-    keyword_data = response.json()
-    return keyword_data
-
-def get_movie_credits(id: int):
-    url = f"https://api.themoviedb.org/3/movie/{id}/credits"
-    headers = prepare_search()
-    response = requests.get(url, headers=headers)
-    credit_data = response.json()
-    return credit_data
-
 def get_director(credits: dict):
     directors = []
     for person in credits["crew"]:
@@ -68,19 +47,22 @@ def get_main_cast(credits: dict, n: int=10):
     return main_cast
 
 def get_movie_data(movie_id: int):
-    details = get_movie_details(movie_id)
-    keywords = get_movie_keywords(movie_id)
-    credits = get_movie_credits(movie_id)
-    release_year = details["release_date"][:4]
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+    headers = prepare_search()
+    params = {
+        "append_to_response": "keywords,credits"
+    }
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
     return Movie(
-        movie_id = details["id"],
-        title = details["title"],
-        release_year = release_year,
-        overview = details["overview"],
-        genres = details["genres"],
-        keywords = keywords["keywords"],
-        director = get_director(credits),
-        cast = get_main_cast(credits)
+        movie_id = data["id"],
+        title = data["title"],
+        release_year = data["release_date"][:4],
+        overview = data["overview"],
+        genres = data["genres"],
+        keywords = data["keywords"]["keywords"],
+        director = get_director(data["credits"]),
+        cast = get_main_cast(data["credits"])
     )
 
 def find_candidate_movies(

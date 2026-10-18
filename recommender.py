@@ -20,7 +20,7 @@ def director_similarity(movie1: Movie, movie2: Movie):
     return set_similarity(movie1.get_director_ids(), movie2.get_director_ids())
 
 def movie_similarity(
-    movie1: Movie, movie2: Movie, genre_weight: float=0.25, keyword_weight: float=0.25, cast_weight: float=0.25, director_weight: float=0.25
+    movie1: Movie, movie2: Movie, genre_weight: float=0.40, keyword_weight: float=0.40, cast_weight: float=0.10, director_weight: float=0.10
 ):
     genre_score = genre_similarity(movie1, movie2)
     keyword_score = keyword_similarity(movie1, movie2)
