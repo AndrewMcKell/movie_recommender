@@ -13,7 +13,7 @@ def prepare_search():
     }
     return headers
 
-def search_movie_by_title(title: str):
+def search_movies_by_title(title: str):
     url = "https://api.themoviedb.org/3/search/movie"
     headers = prepare_search()
     params = {
@@ -21,8 +21,8 @@ def search_movie_by_title(title: str):
     }
     response = requests.get(url, headers=headers, params=params)
     response_data = response.json()
-    top_result_data = response_data["results"][0]
-    return top_result_data
+    top_results_data = response_data["results"]
+    return top_results_data
 
 def get_movie_details(id: int):
     url = f"https://api.themoviedb.org/3/movie/{id}"
